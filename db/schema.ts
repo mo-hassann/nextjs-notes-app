@@ -13,7 +13,7 @@ import {
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
 
-export const todoStateEnum = pgEnum("todo_state", ["TODO", "COMPLETED"]);
+export const todoStateEnum = pgEnum("todo_state", ["TODO", "COMPLETED"]); // todo make third option "INPROGRESS"
 
 export const todoTable = pgTable("todo", {
   id: uuid("id").defaultRandom().primaryKey(),
