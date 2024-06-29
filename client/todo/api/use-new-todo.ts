@@ -25,7 +25,6 @@ export default function useNewTodo() {
       toast.success(`todo created successfully`);
     },
     onError: (error) => {
-      console.log(error.message);
       toast.error(error.message || "something went wrong");
     },
   });

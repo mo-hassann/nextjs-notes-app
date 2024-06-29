@@ -17,7 +17,6 @@ export default function useNewCategory() {
 
       const data = await res.json();
 
-      console.log(data);
       return data;
     },
     onSuccess: async (_, {}) => {
@@ -25,7 +24,6 @@ export default function useNewCategory() {
       toast.success(`category created successfully`);
     },
     onError: (error) => {
-      console.log(error.message);
       toast.error(error.message || "something went wrong");
     },
   });

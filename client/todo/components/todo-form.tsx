@@ -25,28 +25,36 @@ import Select from "@/components/select";
 
 const FormSchema = todoSchema
   .pick({ title: true, description: true, doneIn: true })
-  .and(z.object({ categories: z.array(z.object({ value: z.string(), label: z.string() })) }));
+  .and(
+    z.object({ categories: z.array(z.object({ value: z.string(), label: z.string() })).nullable() })
+  );
 type FormSchemaType = z.infer<typeof FormSchema>;
 
 type props = {
   onSubmit: (data: FormSchemaType) => void;
   categories: {
-    id: string;
-    name: string;
-    userId: string;
+    value: string;
+    label: string;
   }[];
   onCreateOption: (inputValue: string) => void;
   disabled: boolean;
+  defaultValues: FormSchemaType;
 };
 
-export default function NewTodoForm({ onSubmit, categories, onCreateOption, disabled }: props) {
+export default function TodoForm({
+  onSubmit,
+  categories,
+  onCreateOption,
+  disabled,
+  defaultValues,
+}: props) {
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
-      title: "",
-      description: "",
-      doneIn: new Date(),
-      categories: [],
+      title: defaultValues.title,
+      description: defaultValues.description,
+      doneIn: defaultValues.doneIn,
+      categories: defaultValues.categories,
     },
   });
 
@@ -74,14 +82,11 @@ export default function NewTodoForm({ onSubmit, categories, onCreateOption, disa
               <FormLabel>categories</FormLabel>
               <FormControl>
                 <Select
-                  value={field.value}
+                  value={field.value ?? []}
                   onChange={field.onChange}
                   isLoading={disabled}
                   onCreateOption={onCreateOption}
-                  options={categories.map((category) => ({
-                    label: category.name,
-                    value: category.id,
-                  }))}
+                  options={categories}
                 />
               </FormControl>
               <FormMessage />

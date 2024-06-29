@@ -8,6 +8,7 @@ import {
   pgEnum,
   timestamp,
   unique,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 import { createSelectSchema } from "drizzle-zod";
 import { z } from "zod";
@@ -34,11 +35,15 @@ export const categoryTable = pgTable("category", {
 export const todoToCategoryTable = pgTable(
   "todo_to_category",
   {
-    todoId: uuid("todo_id").references(() => todoTable.id, { onDelete: "cascade" }),
-    categoryId: uuid("category_id").references(() => categoryTable.id, { onDelete: "cascade" }),
+    todoId: uuid("todo_id")
+      .notNull()
+      .references(() => todoTable.id, { onDelete: "cascade" }),
+    categoryId: uuid("category_id")
+      .notNull()
+      .references(() => categoryTable.id, { onDelete: "cascade" }),
   },
   (table) => ({
-    uniqueTodoCategory: unique("unique_todo_category").on(table.todoId, table.categoryId),
+    pk: primaryKey(table.todoId, table.categoryId),
   })
 );
 
@@ -65,5 +70,8 @@ export const todoToCategoryRelations = relations(todoToCategoryTable, ({ one, ma
 // zod schemas
 export const todoSchema = createSelectSchema(todoTable, {
   doneIn: z.coerce.date(),
+  title: z.string().min(3, "title must be at least 3 chars"),
 });
-export const categorySchema = createSelectSchema(categoryTable);
+export const categorySchema = createSelectSchema(categoryTable, {
+  name: z.string().min(3, "category name must be at least 1 chars"),
+});

@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import QueryProvider from "@/providers/react-query";
 import { Toaster } from "@/components/ui/sonner";
+import DialogsProvider from "@/providers/dialogs";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -24,6 +25,7 @@ export default function RootLayout({
           <QueryProvider>
             {children}
             <Toaster />
+            <DialogsProvider />
           </QueryProvider>
         </body>
       </html>

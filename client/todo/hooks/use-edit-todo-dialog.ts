@@ -2,13 +2,14 @@
 import { create } from "zustand";
 
 type State = {
+  id?: string;
   isOpen: boolean;
-  onOpen: () => void;
+  onOpen: (id: string) => void;
   onClose: () => void;
 };
 
-export const useNewTodoDialog = create<State>((set) => ({
+export const useEditTodoDialog = create<State>((set) => ({
   isOpen: false,
-  onOpen: () => set({ isOpen: true }),
+  onOpen: (id) => set({ isOpen: true, id }),
   onClose: () => set({ isOpen: false }),
 }));

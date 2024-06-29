@@ -1,14 +1,15 @@
+"use client";
+
 import TodoContainer from "@/client/todo/components/todo-container";
-import Header from "@/components/header";
+import { useNewTodoDialog } from "@/client/todo/hooks/use-new-todo-dialog";
+import { Button } from "@/components/ui/button";
 
-export default async function Home() {
+export default function Home() {
+  const { onOpen } = useNewTodoDialog();
   return (
-    <main className="bg-slate-50 h-full">
-      <Header />
-
-      <section className="flex items-center justify-center h-full">
-        <TodoContainer />
-      </section>
-    </main>
+    <section className="flex items-center justify-center h-full">
+      <Button onClick={onOpen}>new todo</Button>
+      <TodoContainer />
+    </section>
   );
 }
