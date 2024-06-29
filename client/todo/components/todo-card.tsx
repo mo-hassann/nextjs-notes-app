@@ -8,13 +8,25 @@ type props = {
   categories: { id: string; name: string }[];
   state: string;
   onEdit: () => void;
+  onDelete: () => void;
 };
 
-export default function TodoCard({ description, doneIn, state, title, categories, onEdit }: props) {
+export default function TodoCard({
+  description,
+  doneIn,
+  state,
+  title,
+  categories,
+  onEdit,
+  onDelete,
+}: props) {
   return (
     <Card>
       <CardContent>
         <Button onClick={onEdit}>edit</Button>
+        <Button variant="destructive" onClick={onDelete}>
+          delete
+        </Button>
         <h4>{title}</h4>
         <p>{description}</p>
         <div className="space-x-2">

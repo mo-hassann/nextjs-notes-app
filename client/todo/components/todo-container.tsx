@@ -5,10 +5,13 @@ import useGetTodos from "../api/use-get-todos";
 
 import { format } from "date-fns";
 import { useEditTodoDialog } from "../hooks/use-edit-todo-dialog";
+import useDeleteTodo from "../api/use-delete-todo";
 
 export default function TodoContainer() {
-  const todosQuery = useGetTodos();
   const { onOpen } = useEditTodoDialog();
+
+  const todosQuery = useGetTodos();
+  const todoMutation = useDeleteTodo();
 
   return (
     <Card>
@@ -23,6 +26,7 @@ export default function TodoContainer() {
               doneIn={format(todo.doneIn, "dd-MM-yyyy")}
               state={todo.state}
               onEdit={() => onOpen(todo.id)}
+              onDelete={() => todoMutation.mutate({ id: todo.id })}
             />
           );
         })}

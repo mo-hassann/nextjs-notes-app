@@ -151,6 +151,20 @@ const app = new Hono()
 
       return c.json({ data });
     }
-  );
+  )
+  .delete("/:id", zValidator("param", z.object({ id: z.string().min(1) })), async (c) => {
+    const auth = getAuth(c);
+    const userId = auth?.userId;
+    if (!userId) return c.json({ message: "you are not logged in." }, 401);
+
+    const { id: todoId } = c.req.valid("param");
+
+    const [data] = await db
+      .delete(todoTable)
+      .where(and(eq(todoTable.id, todoId), eq(todoTable.userId, userId)))
+      .returning();
+
+    return c.json({ data });
+  });
 
 export default app;
