@@ -12,6 +12,8 @@ import { useEditTodoDialog } from "../hooks/use-edit-todo-dialog";
 import useEditTodo from "../api/use-edit-todo";
 import useGetTodo from "../api/use-get-todo";
 import { useEffect } from "react";
+import { CircleX } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export default function EditTodoDialog() {
   const { isOpen, onClose, id } = useEditTodoDialog();
@@ -43,11 +45,18 @@ export default function EditTodoDialog() {
 
   return (
     <DialogComponent title="crate new todo" isOpen={isOpen} onOpenChange={onClose}>
-      {isLoading ? (
-        <Spinner />
-      ) : loadingError ? (
-        <p>something went wrong</p>
-      ) : (
+      {isLoading && <Spinner className="w-full my-12" />}
+      {loadingError && (
+        <div className="flex items-center gap-3 flex-col w-full col-span-full my-12">
+          <div className="flex items-center gap-2 text-muted-foreground text-lg font-semibold">
+            <CircleX className="size-8" />
+            <span className="block">Something went wrong !</span>
+          </div>
+          <Button onClick={() => todoQuery.refetch()}>Try Again</Button>
+        </div>
+      )}
+
+      {!isLoading && !loadingError && (
         <TodoForm
           defaultValues={{
             categories: categoryToSelectOptions(todoQuery.data?.categories ?? []),

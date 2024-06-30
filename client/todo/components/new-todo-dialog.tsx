@@ -23,9 +23,8 @@ export default function NewTodoDialog() {
 
   return (
     <DialogComponent title="crate new todo" isOpen={isOpen} onOpenChange={onClose}>
-      {isLoading ? (
-        <Spinner />
-      ) : (
+      {isLoading && <Spinner className="w-full my-12" />}
+      {!isLoading && (
         <TodoForm
           defaultValues={{
             categories: [],
