@@ -19,31 +19,29 @@ export default function TodoContainer() {
   const isPending = deleteTodoMutation.isPending || editTodoStateMutation.isPending;
 
   return (
-    <Card>
-      <CardContent>
-        {todosQuery.data?.map((todo) => {
-          return (
-            <TodoCard
-              key={todo.id}
-              title={todo.title}
-              description={todo.description}
-              categories={todo.categories}
-              doneIn={format(todo.doneIn, "dd-MM-yyyy")}
-              state={todo.state}
-              onEdit={() => onOpen(todo.id)}
-              onDelete={() => deleteTodoMutation.mutate({ id: todo.id })}
-              setTodoIsCompleted={() =>
-                editTodoStateMutation.mutate({
-                  id: todo.id,
-                  state: todo.state === "COMPLETED" ? "TODO" : "COMPLETED", // reverse the state (temporarily) // todo make third option "INPROGRESS"
-                })
-              }
-              todoIsCompleted={todo.state === "COMPLETED"}
-              isPending={isPending}
-            />
-          );
-        })}
-      </CardContent>
-    </Card>
+    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-3">
+      {todosQuery.data?.map((todo) => {
+        return (
+          <TodoCard
+            key={todo.id}
+            title={todo.title}
+            description={todo.description}
+            categories={todo.categories}
+            doneIn={format(todo.doneIn, "dd MMM")}
+            state={todo.state}
+            onEdit={() => onOpen(todo.id)}
+            onDelete={() => deleteTodoMutation.mutate({ id: todo.id })}
+            setTodoIsCompleted={() =>
+              editTodoStateMutation.mutate({
+                id: todo.id,
+                state: todo.state === "COMPLETED" ? "TODO" : "COMPLETED", // reverse the state (temporarily) // todo make third option "INPROGRESS"
+              })
+            }
+            todoIsCompleted={todo.state === "COMPLETED"}
+            isPending={isPending}
+          />
+        );
+      })}
+    </div>
   );
 }

@@ -2,7 +2,7 @@ import Header from "@/components/header";
 
 export default function layout({ children }: { children: React.ReactNode }) {
   return (
-    <main className="bg-slate-50 h-full">
+    <main className="h-full bg-background container">
       <Header />
 
       {children}

@@ -140,7 +140,7 @@ export default function TodoForm({
                   name="description"
                   placeholder="enter todo description..."
                   className="resize-none"
-                  value={field.value as string}
+                  value={field.value ?? ""}
                 />
               </FormControl>
               <FormMessage />

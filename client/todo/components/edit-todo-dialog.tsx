@@ -51,7 +51,7 @@ export default function EditTodoDialog() {
         <TodoForm
           defaultValues={{
             categories: categoryToSelectOptions(todoQuery.data?.categories ?? []),
-            description: todoQuery.data?.description ?? null,
+            description: todoQuery.data?.description ?? "",
             doneIn: new Date(todoQuery.data?.doneIn ?? ""),
             title: todoQuery.data?.title ?? "",
           }}

@@ -96,7 +96,7 @@ const app = new Hono()
 
       const [data] = await db
         .insert(todoTable)
-        .values({ doneIn: values.doneIn, title: values.title, userId })
+        .values({ userId, ...values })
         .returning();
 
       if (values.categoryIds.length > 0) {
@@ -134,7 +134,7 @@ const app = new Hono()
 
       const [data] = await db
         .update(todoTable)
-        .set({ doneIn: values.doneIn, title: values.title })
+        .set(values)
         .where(and(eq(todoTable.id, todoId), eq(todoTable.userId, userId)))
         .returning();
 
