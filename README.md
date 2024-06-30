@@ -1,5 +1,7 @@
 # this is hono drizzle starter code
 
+![alt text](https://github.com/mo-hassann/todo-app/blob/main/public/app-picture.png)
+
 ## Getting Started
 
 First, run the development server:
