@@ -5,7 +5,7 @@ import todo from "@/server/todo";
 import category from "@/server/category";
 import { clerkMiddleware } from "@hono/clerk-auth";
 
-// export const runtime = "edge";
+export const runtime = "edge";
 
 const app = new Hono().basePath("/api");
 
