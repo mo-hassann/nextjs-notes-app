@@ -68,7 +68,7 @@ export default function EditTodoDialog() {
             editTodoMutation.mutate(
               {
                 ...data,
-                id,
+                id: id as string,
                 categoryIds: (data.categories ?? []).map((category) => category.value),
               },
               { onSuccess: () => onClose() }
