@@ -28,7 +28,7 @@ export default function Header() {
       <div className="flex items-center flex-col md:flex-row px-10 py-20 gap-20 md:gap-40 lg:gap-60">
         <div className="space-y-2">
           <h1 className="text-primary text-5xl font-semibold">Notes App ✏</h1>
-          <p className="max-w-[500px] text-muted-foreground">Lorem ipsum dolor sit, amet consectetur adipisicing elit. Rerum, inventore, pariatur animi esse iste recusandae vero vel consequuntur voluptas voluptate in asperiores dicta nihil nesciunt et quisquam illo corporis quibusdam.</p>
+          <p className="max-w-[500px] text-muted-foreground">A Notes app is a versatile tool designed to help you quickly jot down thoughts, ideas, to-do lists, and important information. you can use it on smartphones, tablets, and computers, making it easy to sync notes across all your devices.</p>
         </div>
         <div>
           <Image src="/header-img.png" alt="notes app header image" width={290} height={290} />

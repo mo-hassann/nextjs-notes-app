@@ -8,7 +8,7 @@ type State = {
   onClose: () => void;
 };
 
-export const useEditTodoDialog = create<State>((set) => ({
+export const useEditNoteDialog = create<State>((set) => ({
   isOpen: false,
   onOpen: (id) => set({ isOpen: true, id }),
   onClose: () => set({ isOpen: false }),

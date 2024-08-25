@@ -1,12 +1,12 @@
-import EditTodoDialog from "@/client/todo/components/edit-todo-dialog";
-import NewTodoDialog from "@/client/todo/components/new-todo-dialog";
+import EditNoteDialog from "@/client/note/components/edit-note-dialog";
+import NewNoteDialog from "@/client/note/components/new-note-dialog";
 import React from "react";
 
 export default function DialogsProvider() {
   return (
     <>
-      <NewTodoDialog />
-      <EditTodoDialog />
+      <NewNoteDialog />
+      <EditNoteDialog />
     </>
   );
 }

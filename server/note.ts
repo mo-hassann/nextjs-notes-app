@@ -2,7 +2,7 @@ import db from "@/db";
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
 import { string, z } from "zod";
-import { categoryTable, todoSchema, todoTable, todoToCategoryTable } from "@/db/schema";
+import { categoryTable, noteSchema, noteTable, noteToCategoryTable } from "@/db/schema";
 import { getAuth } from "@hono/clerk-auth";
 import { and, arrayContains, eq, inArray, sql } from "drizzle-orm";
 
@@ -14,23 +14,23 @@ const app = new Hono()
 
     const data = await db
       .select({
-        id: todoTable.id,
-        title: todoTable.title,
-        description: todoTable.description,
-        state: todoTable.state,
-        doneIn: todoTable.doneIn,
+        id: noteTable.id,
+        title: noteTable.title,
+        description: noteTable.description,
+        state: noteTable.state,
+        doneIn: noteTable.doneIn,
         categories: sql<{ id: string; name: string }[] | null | [null]>`json_agg(${categoryTable})`,
       })
-      .from(todoTable)
-      .leftJoin(todoToCategoryTable, eq(todoTable.id, todoToCategoryTable.todoId))
-      .leftJoin(categoryTable, eq(todoToCategoryTable.categoryId, categoryTable.id))
-      .where(eq(todoTable.userId, userId))
-      .groupBy(todoTable.id)
-      .then((todos) =>
-        todos.map((todo) => ({
-          ...todo,
+      .from(noteTable)
+      .leftJoin(noteToCategoryTable, eq(noteTable.id, noteToCategoryTable.noteId))
+      .leftJoin(categoryTable, eq(noteToCategoryTable.categoryId, categoryTable.id))
+      .where(eq(noteTable.userId, userId))
+      .groupBy(noteTable.id)
+      .then((notes) =>
+        notes.map((note) => ({
+          ...note,
           // some times this sql exception "json_agg" return ([null] or null) so this code ensure that the returning array always in the categories type
-          categories: (todo.categories ?? []).filter((item) => item !== null),
+          categories: (note.categories ?? []).filter((item) => item !== null),
         }))
       );
 
@@ -41,33 +41,31 @@ const app = new Hono()
     const userId = auth?.userId;
     if (!userId) return c.json({ message: "you are not logged in." }, 401);
     try {
-      const { id: todoId } = c.req.valid("param");
+      const { id: noteId } = c.req.valid("param");
 
       const [data] = await db
         .select({
-          id: todoTable.id,
-          title: todoTable.title,
-          description: todoTable.description,
-          state: todoTable.state,
-          doneIn: todoTable.doneIn,
-          categories: sql<
-            { id: string; name: string }[] | null | [null]
-          >`json_agg(${categoryTable})`,
+          id: noteTable.id,
+          title: noteTable.title,
+          description: noteTable.description,
+          state: noteTable.state,
+          doneIn: noteTable.doneIn,
+          categories: sql<{ id: string; name: string }[] | null | [null]>`json_agg(${categoryTable})`,
         })
-        .from(todoTable)
-        .leftJoin(todoToCategoryTable, eq(todoTable.id, todoToCategoryTable.todoId))
-        .leftJoin(categoryTable, eq(todoToCategoryTable.categoryId, categoryTable.id))
-        .where(and(eq(todoTable.userId, userId), eq(todoTable.id, todoId)))
-        .groupBy(todoTable.id)
-        .then((todos) =>
-          todos.map((todo) => ({
-            ...todo,
+        .from(noteTable)
+        .leftJoin(noteToCategoryTable, eq(noteTable.id, noteToCategoryTable.noteId))
+        .leftJoin(categoryTable, eq(noteToCategoryTable.categoryId, categoryTable.id))
+        .where(and(eq(noteTable.userId, userId), eq(noteTable.id, noteId)))
+        .groupBy(noteTable.id)
+        .then((notes) =>
+          notes.map((note) => ({
+            ...note,
             // some times this sql exception "json_agg" return ([null] or null) so this code ensure that the returning array always in the categories type
-            categories: (todo.categories ?? []).filter((item) => item !== null),
+            categories: (note.categories ?? []).filter((item) => item !== null),
           }))
         );
 
-      if (!data) return c.json({ message: "todo does not exist" }, 404);
+      if (!data) return c.json({ message: "note does not exist" }, 404);
 
       return c.json({ data });
     } catch (error: any) {
@@ -79,7 +77,7 @@ const app = new Hono()
     "/",
     zValidator(
       "json",
-      todoSchema
+      noteSchema
         .pick({
           title: true,
           description: true,
@@ -95,17 +93,17 @@ const app = new Hono()
       const values = c.req.valid("json");
 
       const [data] = await db
-        .insert(todoTable)
+        .insert(noteTable)
         .values({ userId, ...values })
         .returning();
 
       if (values.categoryIds.length > 0) {
-        const todoToCategoryValues = values.categoryIds.map((categoryId) => ({
-          todoId: data.id,
+        const noteToCategoryValues = values.categoryIds.map((categoryId) => ({
+          noteId: data.id,
           categoryId,
         }));
 
-        await db.insert(todoToCategoryTable).values(todoToCategoryValues);
+        await db.insert(noteToCategoryTable).values(noteToCategoryValues);
       }
 
       return c.json({ data });
@@ -115,7 +113,7 @@ const app = new Hono()
     "/:id",
     zValidator(
       "json",
-      todoSchema
+      noteSchema
         .pick({
           title: true,
           description: true,
@@ -130,58 +128,53 @@ const app = new Hono()
       if (!userId) return c.json({ message: "you are not logged in." }, 401);
 
       const values = c.req.valid("json");
-      const { id: todoId } = c.req.valid("param");
+      const { id: noteId } = c.req.valid("param");
 
       const [data] = await db
-        .update(todoTable)
+        .update(noteTable)
         .set(values)
-        .where(and(eq(todoTable.id, todoId), eq(todoTable.userId, userId)))
+        .where(and(eq(noteTable.id, noteId), eq(noteTable.userId, userId)))
         .returning();
 
-      await db.delete(todoToCategoryTable).where(eq(todoToCategoryTable.todoId, data.id));
+      await db.delete(noteToCategoryTable).where(eq(noteToCategoryTable.noteId, data.id));
 
       if (values.categoryIds.length > 0) {
-        const todoToCategoryValues = values.categoryIds.map((categoryId) => ({
-          todoId: data.id,
+        const noteToCategoryValues = values.categoryIds.map((categoryId) => ({
+          noteId: data.id,
           categoryId,
         }));
 
-        await db.insert(todoToCategoryTable).values(todoToCategoryValues);
+        await db.insert(noteToCategoryTable).values(noteToCategoryValues);
       }
 
       return c.json({ data });
     }
   )
-  .patch(
-    "/:id/todo-state",
-    zValidator("json", todoSchema.pick({ state: true })),
-    zValidator("param", z.object({ id: z.string().min(1) })),
-    async (c) => {
-      const auth = getAuth(c);
-      const userId = auth?.userId;
-      if (!userId) return c.json({ message: "you are not logged in." }, 401);
+  .patch("/:id/note-state", zValidator("json", noteSchema.pick({ state: true })), zValidator("param", z.object({ id: z.string().min(1) })), async (c) => {
+    const auth = getAuth(c);
+    const userId = auth?.userId;
+    if (!userId) return c.json({ message: "you are not logged in." }, 401);
 
-      const { state } = c.req.valid("json");
-      const { id: todoId } = c.req.valid("param");
+    const { state } = c.req.valid("json");
+    const { id: noteId } = c.req.valid("param");
 
-      const data = await db
-        .update(todoTable)
-        .set({ state })
-        .where(and(eq(todoTable.id, todoId), eq(todoTable.userId, userId)));
+    const data = await db
+      .update(noteTable)
+      .set({ state })
+      .where(and(eq(noteTable.id, noteId), eq(noteTable.userId, userId)));
 
-      return c.json({ data });
-    }
-  )
+    return c.json({ data });
+  })
   .delete("/:id", zValidator("param", z.object({ id: z.string().min(1) })), async (c) => {
     const auth = getAuth(c);
     const userId = auth?.userId;
     if (!userId) return c.json({ message: "you are not logged in." }, 401);
 
-    const { id: todoId } = c.req.valid("param");
+    const { id: noteId } = c.req.valid("param");
 
     const [data] = await db
-      .delete(todoTable)
-      .where(and(eq(todoTable.id, todoId), eq(todoTable.userId, userId)))
+      .delete(noteTable)
+      .where(and(eq(noteTable.id, noteId), eq(noteTable.userId, userId)))
       .returning();
 
     return c.json({ data });

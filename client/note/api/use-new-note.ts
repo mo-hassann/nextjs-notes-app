@@ -4,25 +4,25 @@ import { InferRequestType } from "hono";
 import { InferResponseType } from "hono";
 import { toast } from "sonner";
 
-type ResType = InferResponseType<typeof client.api.todo.$post>;
-type ReqType = InferRequestType<typeof client.api.todo.$post>["json"];
+type ResType = InferResponseType<typeof client.api.note.$post>;
+type ReqType = InferRequestType<typeof client.api.note.$post>["json"];
 
-export default function useNewTodo() {
+export default function useNewNote() {
   const queryClient = useQueryClient();
   const mutation = useMutation<ResType, Error, ReqType>({
-    mutationFn: async (todo) => {
-      const res = await client.api.todo.$post({ json: todo });
+    mutationFn: async (note) => {
+      const res = await client.api.note.$post({ json: note });
 
-      if (!res.ok) throw new Error("field to create todos");
+      if (!res.ok) throw new Error("field to create notes");
 
       const data = await res.json();
 
       return data;
     },
     onSuccess: async (_, {}) => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
+      queryClient.invalidateQueries({ queryKey: ["notes"] });
       queryClient.invalidateQueries({ queryKey: ["categories"] });
-      toast.success(`todo created successfully`);
+      toast.success(`note created successfully`);
     },
     onError: (error) => {
       toast.error(error.message || "something went wrong");

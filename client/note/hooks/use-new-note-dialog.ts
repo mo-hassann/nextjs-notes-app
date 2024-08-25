@@ -7,7 +7,7 @@ type State = {
   onClose: () => void;
 };
 
-export const useNewTodoDialog = create<State>((set) => ({
+export const useNewNoteDialog = create<State>((set) => ({
   isOpen: false,
   onOpen: () => set({ isOpen: true }),
   onClose: () => set({ isOpen: false }),

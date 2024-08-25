@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { handle } from "hono/vercel";
 
-import todo from "@/server/todo";
+import note from "@/server/note";
 import category from "@/server/category";
 import { clerkMiddleware } from "@hono/clerk-auth";
 
@@ -11,7 +11,7 @@ const app = new Hono().basePath("/api");
 
 const routes = app /*  */
   .use("*", clerkMiddleware())
-  .route("/todo", todo)
+  .route("/note", note)
   .route("/category", category);
 
 export const GET = handle(app);
